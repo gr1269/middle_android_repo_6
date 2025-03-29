@@ -1,28 +1,26 @@
 package ru.yandexpraktikum.all_notes.di
 
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import ru.yandexpraktikum.all_notes.domain.interactors.DeleteNoteInteractor
 import ru.yandexpraktikum.all_notes.domain.interactors.DeleteNoteInteractorImpl
+import ru.yandexpraktikum.all_notes.domain.interactors.FetchAllNotesInteractor
 import ru.yandexpraktikum.all_notes.domain.interactors.FetchAllNotesInteractorImpl
-import ru.yandexpraktikum.all_notes.presentation.AllNotesViewModelFactory
-import ru.yandexpraktikum.core.domain.repository.NotesRepository
-import ru.yandexpraktikum.core.presentation.mappers.PresentationNoteMapper
 
 
-class AllNotesContainer(
-    private val repository: NotesRepository,
-    private val presentationMapper: PresentationNoteMapper
-) {
 
-    private val fetchAllNotesInteractor by lazy {
-        FetchAllNotesInteractorImpl(repository)
-    }
+@Module
+@InstallIn(ViewModelComponent::class)
+interface AllNotesModule {
 
-    private val deleteNoteInteractor by lazy {
-        DeleteNoteInteractorImpl(repository)
-    }
+    @Binds
+    fun bindFetchAllNotesInteractor(fetchAllNotesInteractorImpl: FetchAllNotesInteractorImpl): FetchAllNotesInteractor
 
-    fun getAllNotesViewModelFactory() = AllNotesViewModelFactory(
-        fetchAllNotesInteractor,
-        deleteNoteInteractor,
-        presentationMapper
-    )
+    @Binds
+    fun bindDeleteNoteInteractor(deleteNoteInteractorImpl: DeleteNoteInteractorImpl): DeleteNoteInteractor
+
 }
+
+
