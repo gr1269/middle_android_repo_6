@@ -1,22 +1,19 @@
 package ru.yandexpraktikum.add_note.di
 
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import ru.yandexpraktikum.add_note.domain.interactors.AddNoteInteractor
 import ru.yandexpraktikum.add_note.domain.interactors.AddNoteInteractorImpl
-import ru.yandexpraktikum.add_note.presentation.AddNoteViewModelFactory
-import ru.yandexpraktikum.core.domain.repository.NotesRepository
-import ru.yandexpraktikum.core.presentation.mappers.PresentationNoteMapper
 
 
-class AddNoteContainer(
-    private val repository: NotesRepository,
-    private val presentationNoteMapper: PresentationNoteMapper
-) {
 
-    private val addNoteInteractor by lazy {
-        AddNoteInteractorImpl(repository)
-    }
+@Module
+@InstallIn(ViewModelComponent::class)
+interface AddNoteModule {
 
-    fun getAddNoteViewModelFactory() = AddNoteViewModelFactory(
-        addNoteInteractor,
-        presentationNoteMapper
-    )
+    @Binds
+    fun bindAddNoteInteractor(addNoteInteractorImpl: AddNoteInteractorImpl): AddNoteInteractor
+
 }

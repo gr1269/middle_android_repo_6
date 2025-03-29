@@ -2,28 +2,39 @@ package ru.yandexpraktikum.core.di
 
 import android.content.Context
 import androidx.room.Room
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import ru.yandexpraktikum.core.data.db.NoteDatabase
-import ru.yandexpraktikum.core.data.mappers.DataNoteMapper
 import ru.yandexpraktikum.core.data.repository.NotesRepositoryImpl
-import ru.yandexpraktikum.core.presentation.mappers.PresentationNoteMapper
+import ru.yandexpraktikum.core.domain.repository.NotesRepository
+import javax.inject.Singleton
 
 private const val DATABASE_NAME = "note_database"
 
-class CoreContainer(
-    context: Context
-) {
-    private val noteDatabase: NoteDatabase = Room.databaseBuilder(
-        context.applicationContext,
-        NoteDatabase::class.java,
-        DATABASE_NAME
-    ).build()
+@Module
+@InstallIn(SingletonComponent::class)
+interface CoreModule {
 
-    private val dataMapper = DataNoteMapper()
+    companion object {
+        @Provides
+        @Singleton
+        fun provideNoteDatabase(@ApplicationContext context: Context): NoteDatabase = Room.databaseBuilder(
+            context.applicationContext,
+            NoteDatabase::class.java,
+            DATABASE_NAME
+        ).build()
 
-    val presentationMapper = PresentationNoteMapper()
+        @Provides
+        @Singleton
+        fun provideNoteDao(noteDatabase: NoteDatabase) = noteDatabase.noteDao()
+    }
 
-    val repository = NotesRepositoryImpl(
-        noteDao = noteDatabase.noteDao(),
-        noteMapper = dataMapper
-    )
+    @Binds
+    @Singleton
+    fun bindNotesRepository(notesRepositoryImpl: NotesRepositoryImpl): NotesRepository
+
 }
